@@ -31,14 +31,17 @@
       <h1 v-else-if="currentTab === 'Mood'">Дневник настроения</h1>
       <h1 v-else-if="currentTab === 'Goals'">Мои цели (SMART)</h1>
       <h1 v-else-if="currentTab === 'Blog'">Статьи о ментальном здоровье</h1>
+       <MoodDiary v-else-if="currentTab === 'Mood'" />
 
       <section class="content-container">
         <!-- Отображение компонентов -->
+        
         <MeditationRoom v-if="currentTab === 'Meditation'" />
         <MentalTest v-else-if="currentTab === 'Test'" />
         <BalanceWheel v-else-if="currentTab === 'Wheel'" />
         <HabitTracker v-else-if="currentTab === 'Habits'" />
         <RelaxRoom v-else-if="currentTab === 'Relax'" />
+        <MoodDiary v-else-if="currentTab === 'Mood'" />
         
         <!-- Заглушка для разделов, которые в процессе (Дневник, Цели, Блог) -->
         <div v-else class="placeholder-card">
@@ -56,9 +59,11 @@
 </template>
 
 <script setup>
+
 import { ref } from 'vue'
 
 // Импорт всех компонентов
+import MoodDiary from './components/MoodDiary.vue'
 import MeditationRoom from './components/MeditationRoom.vue'
 import MentalTest from './components/MentalTest.vue'
 import BalanceWheel from './components/BalanceWheel.vue'
