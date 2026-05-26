@@ -1,76 +1,96 @@
 <template>
-  <div class="habit-section">
-    <div class="habit-container">
-      
-      <!-- ЛЕВАЯ КОЛОНКА -->
-      <div class="habit-sidebar">
-        <div class="stats-card">
-          <h2 class="stats-title">Ваш прогресс</h2>
-          <div class="progress-circle">
-            <span class="progress-val">{{ completedCount }}/{{ habits.length }}</span>
-            <p>привычек выполнено</p>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
-          </div>
+  <div class="habit-page container-fluid py-2">
+    
+    <!-- БЛОК ТЕОРИИ (оставляем без изменений) -->
+    <div class="row mb-5 justify-content-center">
+      <div class="col-12 text-center mb-4">
+        <h2 class="fw-bold h4">Искусство маленьких шагов 📈</h2>
+        <p class="text-muted small">Как заставить мозг работать на вас, а не против вас.</p>
+      </div>
+      <div class="col-md-4 mb-3" v-for="t in theory" :key="t.title">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-3 theory-card">
+          <h6 class="fw-bold primary-text">{{ t.title }}</h6>
+          <p class="very-small text-muted m-0">{{ t.desc }}</p>
         </div>
+      </div>
+    </div>
 
-        <div class="add-habit-card">
-          <h3>Новая привычка</h3>
-          <form @submit.prevent="addHabit" class="habit-form">
-            <input 
-              v-model="newHabitText" 
-              type="text" 
-              placeholder="Например: Медитация..." 
-              maxlength="40"
-              required
-            >
-            <button type="submit" class="add-btn">Добавить</button>
-          </form>
+    <div class="row g-4 justify-content-center">
+      <!-- ЛЕВАЯ КОЛОНКА -->
+      <div class="col-lg-3">
+        <div class="card border-0 shadow-sm p-4 rounded-5 bg-white sticky-top" style="top: 100px;">
+          <h4 class="fw-bold mb-4 text-start">Новый ритуал</h4>
+          <div class="mb-3 text-start">
+            <label class="form-label small fw-bold">Название</label>
+            <input v-model="newHabitName" type="text" class="form-control custom-input" placeholder="Напр: Йога 15 мин">
+          </div>
+          <button @click="addHabit" class="btn btn-lavender w-100 py-3 rounded-4 fw-bold">Добавить</button>
+          
+          <div class="mt-4 p-3 rounded-4" style="background: #fdfaff; border: 1px dashed var(--primary)">
+            <span class="d-block smaller fw-bold text-primary mb-1">Ваша энергия</span>
+            <span class="h3 fw-bold primary-text">✨ {{ totalPoints }} XP</span>
+          </div>
         </div>
       </div>
 
-      <!-- ПРАВАЯ КОЛОНКА -->
-      <div class="habit-main">
-        <div class="filter-bar">
-          <button 
-            v-for="f in ['Все', 'В процессе', 'Выполнено']" 
-            :key="f"
-            @click="currentFilter = f"
-            :class="['filter-btn', { active: currentFilter === f }]"
-          >
-            {{ f }}
+      <!-- ПРАВАЯ КОЛОНКА: ТРЕКЕР -->
+      <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+          <div class="text-start">
+            <h4 class="fw-bold m-0">Текущий прогресс</h4>
+            <span class="text-muted smaller">Отмечайте успехи каждый день</span>
+          </div>
+          <!-- КНОПКА ПЕРЕКЛЮЧЕНИЯ НЕДЕЛИ -->
+          <button @click="confirmNewWeek" class="btn btn-outline-lavender btn-sm rounded-pill px-3 fw-bold">
+            🔄 Начать новую неделю
           </button>
         </div>
 
         <div class="habit-list">
-          <TransitionGroup name="list">
-            <div 
-              v-for="habit in filteredHabits" 
-              :key="habit.id" 
-              class="habit-item"
-              :class="{ 'is-completed': habit.completed }"
-            >
-              <label class="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  v-model="habit.completed" 
-                  @change="saveHabits"
-                >
-                <span class="checkmark"></span>
-                <span class="habit-text">{{ habit.text }}</span>
-              </label>
-              
-              <button @click="removeHabit(habit.id)" class="delete-btn">&times;</button>
-            </div>
-          </TransitionGroup>
+          <div v-for="habit in habits" :key="habit.id" class="habit-item-card card border-0 shadow-sm mb-4 rounded-5">
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <div class="col-md-4 text-start mb-3 mb-md-0">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold h6 m-0">{{ habit.name }}</span>
+                    <button @click="removeHabit(habit.id)" class="btn-del">×</button>
+                  </div>
+                  <div class="maturity-box">
+                    <div class="d-flex justify-content-between smaller mb-1">
+                      <span>Всего выполнено:</span>
+                      <span class="fw-bold">{{ habit.totalDone }} дн.</span>
+                    </div>
+                    <!-- Шкала на 21 день -->
+                    <div class="progress" style="height: 8px; background: #f0f0f0; border-radius: 10px;">
+                      <div class="progress-bar progress-bar-striped" 
+                           :style="{ width: Math.min((habit.totalDone/21 * 100), 100) + '%', background: 'var(--primary)' }"></div>
+                    </div>
+                    <span v-if="habit.totalDone >= 21" class="badge bg-success mt-2 w-100">Привычка сформирована! 🎉</span>
+                  </div>
+                </div>
 
-          <div v-if="filteredHabits.length === 0" class="empty-state">
-            <p>В этом списке пока пусто...</p>
+                <div class="col-md-8">
+                  <div class="d-flex justify-content-around align-items-center bg-light p-3 rounded-4">
+                    <div v-for="(done, dayIndex) in habit.days" :key="dayIndex" class="day-col text-center">
+                      <span class="d-block smaller text-muted mb-2 fw-bold">{{ weekDays[dayIndex] }}</span>
+                      <div 
+                        @click="toggleHabitDay(habit.id, dayIndex)"
+                        :class="['day-circle', { 'is-done': done }]"
+                      >
+                        <span v-if="done">✓</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
+        <div v-if="habits.length === 0" class="py-5 text-center opacity-25">
+          <p class="fs-4 italic">Добавьте первую привычку, чтобы начать путь 🌿</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -78,86 +98,100 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
+const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+const newHabitName = ref('')
+
+const theory = [
+  { title: '🔄 Петля привычки', desc: 'Сигнал -> Действие -> Награда. Придумайте себе маленькое поощрение за каждый "чек"!' },
+  { title: '⏳ Правило 21/90', desc: '21 день для автоматизма, 90 дней для образа жизни. Не делайте пропусков более 2 дней.' },
+  { title: '💎 Масштабирование', desc: 'Начните с того, что занимает 2 минуты. Главное — регулярность, а не нагрузка.' }
+]
+
 const habits = ref([
-  
+  { id: 1, name: 'Медитация', totalDone: 7, days: [false, false, false, false, false, false, false] },
+  { id: 2, name: 'Утренняя зарядка', totalDone: 3, days: [false, false, false, false, false, false, false] }
 ])
 
-const newHabitText = ref('')
-const currentFilter = ref('Все')
+const totalPoints = computed(() => habits.value.reduce((acc, h) => acc + h.totalDone, 0))
 
-// ИСПРАВЛЕННАЯ ЛОГИКА ФИЛЬТРАЦИИ
-const filteredHabits = computed(() => {
-  if (currentFilter.value === 'В процессе') {
-    return habits.value.filter(h => !h.completed) // Было !habit.completed, исправила
-  }
-  if (currentFilter.value === 'Выполнено') {
-    return habits.value.filter(h => h.completed)
-  }
-  return habits.value
-})
+const toggleHabitDay = (id, dayIndex) => {
+  const habit = habits.value.find(h => h.id === id)
+  const wasDone = habit.days[dayIndex]
+  habit.days[dayIndex] = !habit.days[dayIndex]
+  
+  if (!wasDone && habit.days[dayIndex]) habit.totalDone++
+  else if (wasDone && !habit.days[dayIndex]) habit.totalDone--
+  
+  saveHabits()
+}
 
-const completedCount = computed(() => habits.value.filter(h => h.completed).length)
-const progressPercentage = computed(() => habits.value.length ? (completedCount.value / habits.value.length) * 100 : 0)
+// ЛОГИКА НОВОЙ НЕДЕЛИ
+const confirmNewWeek = () => {
+  if (confirm('Завершить текущую неделю? Все отметки Пн-Вс будут очищены, но общий прогресс сохранится.')) {
+    habits.value.forEach(habit => {
+      habit.days = [false, false, false, false, false, false, false]
+    })
+    saveHabits()
+  }
+}
 
 const addHabit = () => {
-  if (newHabitText.value.trim()) {
-    habits.value.push({ id: Date.now(), text: newHabitText.value, completed: false })
-    newHabitText.value = ''
+  if (newHabitName.value.trim()) {
+    habits.value.push({
+      id: Date.now(),
+      name: newHabitName.value,
+      totalDone: 0,
+      days: [false, false, false, false, false, false, false]
+    })
+    newHabitName.value = ''
     saveHabits()
   }
 }
 
 const removeHabit = (id) => {
-  habits.value = habits.value.filter(h => h.id !== id)
-  saveHabits()
+  if(confirm('Удалить привычку?')) {
+    habits.value = habits.value.filter(h => h.id !== id)
+    saveHabits()
+  }
 }
 
-const saveHabits = () => {
-  localStorage.setItem('habitsData', JSON.stringify(habits.value))
-}
+const saveHabits = () => localStorage.setItem('habitsDataV3', JSON.stringify(habits.value))
 
 onMounted(() => {
-  const saved = localStorage.getItem('habitsData')
+  const saved = localStorage.getItem('habitsDataV3')
   if (saved) habits.value = JSON.parse(saved)
 })
 </script>
 
 <style scoped>
-.habit-container { display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
-.habit-sidebar { flex: 0 0 320px; display: flex; flex-direction: column; gap: 20px; }
-.stats-card { background: white; padding: 25px; border-radius: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-.progress-val { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
-.progress-bar-bg { height: 8px; background: #f5f5f5; border-radius: 10px; overflow: hidden; margin-top: 15px; }
-.progress-bar-fill { height: 100%; background: var(--primary); transition: width 0.5s ease; }
+.primary-text { color: var(--primary) !important; }
+.smaller { font-size: 0.7rem; }
+.very-small { font-size: 0.8rem; line-height: 1.4; }
 
-.add-habit-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-.habit-form { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-.habit-form input { padding: 12px; border-radius: 12px; border: 1px solid #eee; font-family: inherit; outline: none; }
-.add-btn { padding: 12px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 700; cursor: pointer; }
+.theory-card { border: 1px solid #f0e6ff !important; transition: 0.3s; text-align: left; }
+.theory-card:hover { transform: translateY(-5px); background: #fdfaff; }
 
-.habit-main { flex: 1; max-width: 600px; min-width: 320px; }
-.filter-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-.filter-btn { padding: 8px 16px; border-radius: 10px; border: 1px solid #eee; background: white; cursor: pointer; color: #888; font-family: inherit; font-size: 0.85rem; }
-.filter-btn.active { background: var(--lavender-light); color: var(--primary); border-color: var(--primary); font-weight: 700; }
+.custom-input { border-radius: 15px; border: 1px solid #eee; padding: 12px; background: #fdfcfd; font-size: 0.9rem; }
+.btn-lavender { background: var(--primary); color: white; border: none; transition: 0.3s; }
+.btn-lavender:hover { background: #9a84be; transform: translateY(-2px); }
 
-.habit-list { display: flex; flex-direction: column; gap: 12px; }
-.habit-item { background: white; padding: 15px 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.02); transition: 0.3s; }
-.habit-item.is-completed { opacity: 0.6; }
-.habit-item.is-completed .habit-text { text-decoration: line-through; }
+.btn-outline-lavender { border: 2px solid var(--lavender-light); color: var(--primary); background: transparent; transition: 0.3s; }
+.btn-outline-lavender:hover { background: var(--lavender-light); }
 
-.checkbox-container { display: flex; align-items: center; cursor: pointer; gap: 12px; position: relative; }
-.checkbox-container input { position: absolute; opacity: 0; }
-.checkmark { height: 22px; width: 22px; background-color: #f0f0f0; border-radius: 7px; display: inline-block; position: relative; }
-.checkbox-container input:checked ~ .checkmark { background-color: var(--primary); }
-.checkmark:after { content: ""; position: absolute; display: none; left: 8px; top: 4px; width: 4px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
-.checkbox-container input:checked ~ .checkmark:after { display: block; }
-.habit-text { font-weight: 600; color: #444; }
+.habit-item-card { border: 1px solid #f9f0ff !important; transition: 0.3s; }
 
-.delete-btn { background: none; border: none; color: #ddd; font-size: 1.4rem; cursor: pointer; }
-.delete-btn:hover { color: var(--accent); }
+.day-circle {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: white; border: 2px solid #eee;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: 0.2s; color: transparent; font-weight: 900;
+}
+.day-circle.is-done {
+  background: var(--primary); border-color: var(--primary); color: white;
+  box-shadow: 0 4px 10px rgba(179, 156, 208, 0.3);
+}
 
-.list-enter-active, .list-leave-active { transition: all 0.3s ease; }
-.list-enter-from, .list-leave-to { opacity: 0; transform: translateX(20px); }
-
-.empty-state { text-align: center; padding: 30px; color: #ccc; font-style: italic; }
+.maturity-box { background: #fdfcfd; padding: 15px; border-radius: 15px; margin-top: 10px; border: 1px solid #f0f0f0; }
+.btn-del { background: none; border: none; color: #eee; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+.btn-del:hover { color: var(--accent); }
 </style>
