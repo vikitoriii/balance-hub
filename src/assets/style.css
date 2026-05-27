@@ -1,12 +1,12 @@
-/* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И СБРОС */
+/* ПОДКЛЮЧЕНИЕ ШРИФТОВ */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Nunito:wght@400;600;700&display=swap');
+
 :root {
   --bg-site: #fefaf9;    
   --primary: #b39cd0;   
   --secondary: #ffcfdf; 
   --lavender-light: #f0e6ff;
   --text-dark: #2d2d2d;
-  --white: #ffffff;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,76 +15,74 @@ body {
   background-color: var(--bg-site);
   font-family: 'Nunito', sans-serif;
   color: var(--text-dark);
-  line-height: 1.4; /* Уменьшили межстрочный интервал */
 }
 
-/* КОМПАКТНАЯ ШАПКА */
+/* ЭЛЕГАНТНЫЙ ЗАГОЛОВОК */
+h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 1.5rem; /* Еще немного уменьшили */
+  letter-spacing: 4px;
+  text-transform: lowercase;
+  color: var(--primary); 
+  margin: 15px 0 20px;
+  text-align: center;
+}
+
+h1::after {
+  content: ''; display: block; width: 25px; height: 2px;
+  background: var(--secondary); margin: 6px auto 0; border-radius: 10px;
+}
+
+/* КОМПАКТНОЕ МЕНЮ */
 header {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
-  padding: 10px 0; /* Было 15-20 */
+  padding: 12px 0; /* Добавили чуть больше отступа сверху/снизу для центровки */
   box-shadow: 0 2px 10px rgba(0,0,0,0.02);
   position: sticky; top: 0; z-index: 1000;
 }
 
 nav {
-  display: flex; justify-content: space-between; align-items: center;
-  max-width: 1200px; margin: 0 auto; padding: 0 20px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  max-width: 1300px !important; /* Увеличили макс. ширину */
+  margin: 0 auto !important;
+  padding: 0 40px !important; /* ВЕРНУЛИ ОТСТУПЫ ПО БОКАМ */
 }
 
 .logo {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.3rem; /* Было 1.6 */
+  font-size: 1.1rem; /* Уменьшили лого */
   font-weight: 700; color: var(--primary);
 }
 
-nav ul { display: flex; list-style: none; gap: 5px; }
+nav ul { display: flex; list-style: none; gap: 4px; align-items: center; }
+
 nav a {
   text-decoration: none; color: var(--text-dark); font-weight: 700;
-  padding: 6px 12px; border-radius: 10px; transition: 0.3s; font-size: 0.85rem;
+  padding: 5px 12px; /* Уменьшили кнопки */
+  border-radius: 8px; transition: 0.3s; 
+  font-size: 0.75rem; /* Сделали надписи в меню меньше */
+  text-transform: uppercase; letter-spacing: 0.5px;
 }
 nav a:hover, nav a.active { background: var(--lavender-light); color: var(--primary); }
 
-/* КОМПАКТНЫЙ КОНТЕНТ */
-main { 
-  max-width: 1200px; 
-  margin: 20px auto; /* Уменьшили отступ сверху */
-  padding: 0 20px; 
-}
-
-h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300; /* Делаем шрифт тонким и изящным */
-  font-size: 1.8rem;
-  letter-spacing: 3px; /* Раздвигаем буквы для "воздуха" */
-  text-transform: lowercase; /* Всё маленькими буквами — выглядит очень стильно */
-  color: var(--primary); /* Лавандовый цвет вместо черного */
-  margin-bottom: 30px;
-  text-align: center;
-  position: relative;
-}
-
-/* Маленькая декоративная полосочка под заголовком */
-h1::after {
-  content: '';
-  display: block;
-  width: 40px;
-  height: 3px;
-  background: var(--secondary); /* Персиковый цвет */
-  margin: 10px auto 0;
-  border-radius: 10px;
-}
-
-footer { text-align: center; padding: 30px; color: #bbb; font-size: 0.8rem; }
-
 /* ОБЩИЕ СТИЛИ КАРТОЧЕК */
-.placeholder-card {
-  background: white; padding: 40px; border-radius: 25px; text-align: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.02); margin: 0 auto; max-width: 500px;
+.card, .diary-card, .meditation-card, .test-card, .controls-card, .wheel-card {
+  padding: 18px !important; /* Еще компактнее */
+  border-radius: 20px !important;
+  background: white;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.02);
+  border: 1px solid #f9f0ff !important;
+}
+main {
+  width: 100% !important;
+  max-width: 1300px !important;
+  margin: 20px auto !important;
+  padding: 0 40px !important; /* ВЕРНУЛИ ОТСТУПЫ ПО БОКАМ */
+  display: block !important;
 }
 
-/* Адаптивность */
-@media (max-width: 1000px) {
-  nav { flex-direction: column; gap: 10px; }
-  h1 { font-size: 1.4rem; }
-}
+footer { text-align: center; padding: 25px; color: #ccc; font-size: 0.7rem; }
