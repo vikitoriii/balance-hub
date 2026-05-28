@@ -1,76 +1,42 @@
 <template>
-  <div class="relax-section">
-    <div class="relax-grid">
+  <div class="relax-page container-fluid">
+    <div class="row g-4">
       
-      <!-- БЛОК 1: ТРЕНАЖЕР ДЫХАНИЯ -->
-      
-       <div class="relax-card breathing-box">
-        <h3>🌱 Тренажер дыхания</h3>
-        <p class="relax-desc">Следуйте за кругом, чтобы успокоить мысли</p>
-        
-        <div class="breathing-container">
-          <div :class="['breathing-circle', breatheStatus]"></div>
-          <div class="breathe-text">{{ breatheText }}</div>
+      <!-- ЛЕВАЯ КОЛОНКА: ДЫХАНИЕ И ТАЙМЕР -->
+      <div class="col-lg-4">
+        <!-- ТРЕНАЖЕР ДЫХАНИЯ -->
+        <div class="relax-card p-4 rounded-5 bg-white shadow-sm mb-4">
+          <h3 class="h5 fw-bold mb-3 primary-text">🌱 Ритм дыхания</h3>
+          <div class="breathing-space">
+             <div :class="['breathe-circle', breatheStatus]"></div>
+             <p class="breathe-text fw-bold">{{ breatheText }}</p>
+          </div>
+          <button @click="toggleBreathing" class="btn btn-lavender w-100 rounded-4">
+            {{ isBreathing ? 'Остановить' : 'Начать практику' }}
+          </button>
         </div>
-        
-        <button @click="toggleBreathing" class="action-btn">
-          {{ isBreathing ? 'Остановить' : 'Начать практику' }}
-        </button>
-      </div>
 
-      <!-- БЛОК 2: POMODORO ТАЙМЕР -->
-      <div class="relax-card pomodoro-card">
-        <div class="card-header">
-          <h3>⏱️ Помодоро</h3>
-          <div class="hint-wrapper">
-            <span class="hint-icon">?</span>
-            <div class="hint-content">
-              <strong>Метод Помидора:</strong><br>
-              1. Фокус: 25 мин<br>
-              2. Отдых: 5 мин<br>
-              3. Каждые 4 цикла: длинный отдых (15 мин).
-            </div>
+        <!-- УМНЫЙ POMODORO (Фоновый режим) -->
+        <div class="relax-card p-4 rounded-5 bg-white shadow-sm">
+          <h3 class="h5 fw-bold mb-1">⏱️ Таймер Помодоро</h3>
+          <p class="very-small text-muted mb-3">{{ isBreak ? 'Перерыв' : 'Фокус на задаче' }}</p>
+          
+          <div class="timer-display display-4 fw-bold mb-3">
+            {{ formatTime(timeLeft) }}
+          </div>
+
+          <div class="d-flex gap-2">
+            <button @click="toggleTimer" class="btn btn-lavender flex-grow-1 rounded-4">
+              {{ isTimerRunning ? 'Пауза' : 'Старт' }}
+            </button>
+            <button @click="resetTimer" class="btn btn-light rounded-4">↺</button>
           </div>
         </div>
-        <p class="relax-desc" :style="{ color: isBreak ? 'var(--primary)' : 'var(--accent)' }">
-          {{ isBreak ? 'Время перерыва' : 'Время фокусировки' }}
-        </p>
-        
-        <div class="timer-display">
-          {{ formatTime(timeLeft) }}
-        </div>
-
-        <!-- Индикаторы циклов -->
-        <div class="cycles-track">
-          <span v-for="n in 4" :key="n" 
-                :class="['cycle-dot', { active: n <= cyclesCompleted % 4 + (isBreak ? 0 : 0), current: n === (cyclesCompleted % 4 + 1) && !isBreak }]">
-          </span>
-        </div>
-        
-        <div class="timer-controls">
-          <button @click="toggleTimer" class="timer-btn-main">
-            {{ isTimerRunning ? 'Пауза' : 'Старт' }}
-          </button>
-          <button @click="resetTimer" class="timer-btn-reset">↺</button>
-        </div>
       </div>
 
-      <!-- БЛОК 3: УЮТНЫЕ АФФИРМАЦИИ -->
-      <div class="relax-card affirmation-card">
-        <div class="card-header">
-          <h3>✨ Твое состояние</h3>
-        </div>
-        <p class="relax-desc">Послание для тебя</p>
-        
-        <div class="affirmation-content">
-          <Transition name="fade" mode="out-in">
-            <p :key="currentAffirmation" class="affirmation-text">
-              "{{ currentAffirmation }}"
-            </p>
-          </Transition>
-        </div>
-        
-        <button @click="nextAffirmation" class="next-btn">Хочу еще</button>
+      <!-- ПРАВАЯ КОЛОНКА: МАТРИЦА ЭЙЗЕНХАУЭРА (Переехала сюда) -->
+      <div class="col-lg-8">
+        <PriorityMatrix />
       </div>
 
     </div>
@@ -78,189 +44,95 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import PriorityMatrix from './PriorityMatrix.vue'
 
 // --- ЛОГИКА ДЫХАНИЯ ---
-const isBreathing = ref(false)
-const breatheStatus = ref('')
-const breatheText = ref('Запуск')
+const isBreathing = ref(false); const breatheStatus = ref(''); const breatheText = ref('Вдох-выдох')
 let breatheInterval = null
-
 const toggleBreathing = () => {
   isBreathing.value = !isBreathing.value
   if (isBreathing.value) {
-    runBreatheCycle()
-    breatheInterval = setInterval(runBreatheCycle, 8000)
-  } else {
-    clearInterval(breatheInterval)
-    breatheStatus.value = ''
-    breatheText.value = 'Запуск'
-  }
-}
-
-const runBreatheCycle = () => {
-  breatheStatus.value = 'inhale'
-  breatheText.value = 'Вдох...'
-  setTimeout(() => {
-    if(isBreathing.value) {
-      breatheStatus.value = 'exhale'
-      breatheText.value = 'Выдох...'
+    const cycle = () => {
+      breatheStatus.value = 'inhale'; breatheText.value = 'Вдох...';
+      setTimeout(() => { if (isBreathing.value) { breatheStatus.value = 'exhale'; breatheText.value = 'Выдох...'; } }, 4000)
     }
-  }, 4000)
+    cycle(); breatheInterval = setInterval(cycle, 8000)
+  } else { clearInterval(breatheInterval); breatheStatus.value = ''; breatheText.value = 'Вдох-выдох' }
 }
 
-// --- ЛОГИКА POMODORO ---
-const timeLeft = ref(25 * 60)
-const isTimerRunning = ref(false)
-const isBreak = ref(false)
-const cyclesCompleted = ref(0)
+// --- ЛОГИКА ФОНОВОГО ТАЙМЕРА (Senior level) ---
+const timeLeft = ref(25 * 60); const isTimerRunning = ref(false); const isBreak = ref(false)
 let timerInterval = null
 
 const toggleTimer = () => {
   isTimerRunning.value = !isTimerRunning.value
   if (isTimerRunning.value) {
-    timerInterval = setInterval(() => {
-      if (timeLeft.value > 0) {
-        timeLeft.value--
-      } else {
-        switchMode()
-      }
-    }, 1000)
+    // Сохраняем "Время завершения" (Текущее время + оставшиеся секунды)
+    const endTime = Date.now() + (timeLeft.value * 1000)
+    localStorage.setItem('pomodoro_end_time', endTime)
+    localStorage.setItem('pomodoro_is_running', 'true')
+    startInterval()
   } else {
-    clearInterval(timerInterval)
+    stopInterval()
+    localStorage.setItem('pomodoro_is_running', 'false')
+    localStorage.setItem('pomodoro_time_left', timeLeft.value)
   }
 }
 
+const startInterval = () => {
+  timerInterval = setInterval(() => {
+    const endTime = parseInt(localStorage.getItem('pomodoro_end_time'))
+    const remaining = Math.round((endTime - Date.now()) / 1000)
+    
+    if (remaining <= 0) {
+      switchMode()
+    } else {
+      timeLeft.value = remaining
+    }
+  }, 1000)
+}
+
+const stopInterval = () => { clearInterval(timerInterval) }
+
 const switchMode = () => {
-  clearInterval(timerInterval)
+  stopInterval()
+  isBreak.value = !isBreak.value
+  timeLeft.value = isBreak.value ? 5 * 60 : 25 * 60
   isTimerRunning.value = false
-  
-  if (!isBreak.value) {
-    // Был рабочий цикл
-    cyclesCompleted.value++
-    isBreak.value = true
-    // Длинный перерыв после 4 циклов
-    timeLeft.value = (cyclesCompleted.value % 4 === 0) ? 15 * 60 : 5 * 60
-  } else {
-    // Был перерыв
-    isBreak.value = false
-    timeLeft.value = 25 * 60
-  }
-  // Автоматический старт следующего режима (опционально)
-  toggleTimer()
+  localStorage.setItem('pomodoro_is_running', 'false')
 }
 
 const resetTimer = () => {
-  clearInterval(timerInterval)
-  isTimerRunning.value = false
-  isBreak.value = false
-  timeLeft.value = 25 * 60
+  stopInterval(); isTimerRunning.value = false; isBreak.value = false; timeLeft.value = 25 * 60
+  localStorage.removeItem('pomodoro_end_time'); localStorage.setItem('pomodoro_is_running', 'false')
 }
 
-const formatTime = (seconds) => {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s < 10 ? '0' : ''}${s}`
-}
+const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
 
-// --- ЛОГИКА АФФИРМАЦИЙ ---
-const affirmations = [
-  "Я разрешаю себе отдыхать столько, сколько мне нужно",
-  "Моя ценность не зависит от моей продуктивности",
-  "Я делаю всё, что в моих силах, и этого достаточно",
-  "Я выбираю спокойствие вместо тревоги",
-  "С каждым вдохом я становлюсь спокойнее",
-  "Мои цели достижимы, а мой путь уникален"
-]
-const currentAffirmation = ref(affirmations[0])
-const nextAffirmation = () => {
-  const idx = affirmations.indexOf(currentAffirmation.value)
-  currentAffirmation.value = affirmations[(idx + 1) % affirmations.length]
-}
-
-onUnmounted(() => {
-  clearInterval(breatheInterval)
-  clearInterval(timerInterval)
+onMounted(() => {
+  const running = localStorage.getItem('pomodoro_is_running') === 'true'
+  if (running) {
+    const endTime = parseInt(localStorage.getItem('pomodoro_end_time'))
+    const remaining = Math.round((endTime - Date.now()) / 1000)
+    if (remaining > 0) {
+      timeLeft.value = remaining; isTimerRunning.value = true; startInterval()
+    } else { switchMode() }
+  } else {
+    const savedLeft = localStorage.getItem('pomodoro_time_left')
+    if (savedLeft) timeLeft.value = parseInt(savedLeft)
+  }
 })
+onUnmounted(() => stopInterval())
 </script>
 
 <style scoped>
-.relax-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
-}
-
-.relax-card {
-  background: white;
-  padding: 35px;
-  border-radius: 40px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-}
-
-h3 { color: var(--primary); font-size: 1.4rem; font-weight: 800; }
-
-/* ПОДСКАЗКИ */
-.hint-wrapper { position: relative; }
-.hint-icon {
-  width: 18px; height: 18px; background: #f0f0f0; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; cursor: help; color: #aaa; font-weight: 800;
-}
-.hint-content {
-  position: absolute; z-index: 10; bottom: 25px; left: 50%; transform: translateX(-50%);
-  width: 220px; background: #333; color: #fff; padding: 12px; border-radius: 12px;
-  font-size: 0.8rem; opacity: 0; transition: 0.3s; pointer-events: none; text-align: left;
-}
-.hint-wrapper:hover .hint-content { opacity: 1; }
-
-.relax-desc { font-size: 0.9rem; color: #999; margin-bottom: 30px; font-weight: 600; }
-
-/* ДЫХАНИЕ */
-.breathing-container {
-  height: 180px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px;
-}
-.breathing-circle {
-  width: 50px; height: 60px; background: var(--lavender-light); border-radius: 50%;
-  transition: all 4s ease-in-out; box-shadow: 0 0 40px var(--lavender-light);
-}
-.breathing-circle.inhale { transform: scale(3); background: var(--secondary); }
-.breathing-circle.exhale { transform: scale(1); background: var(--lavender-light); }
-.breathe-text { position: absolute; font-weight: 800; color: #555; }
-
-/* ТАЙМЕР */
-.timer-display { font-size: 4.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; font-variant-numeric: tabular-nums; }
-.cycles-track { display: flex; gap: 8px; margin-bottom: 25px; }
-.cycle-dot { width: 10px; height: 10px; background: #eee; border-radius: 50%; transition: 0.3s; }
-.cycle-dot.active { background: var(--primary); transform: scale(1.1); }
-.cycle-dot.current { border: 2px solid var(--accent); animation: pulse 2s infinite; }
-
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-.timer-controls { display: flex; gap: 15px; }
-.timer-btn-main { background: var(--primary); color: white; border: none; padding: 12px 35px; border-radius: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-.timer-btn-reset { background: #f5f5f5; color: #ccc; border: none; width: 45px; border-radius: 15px; font-size: 1.2rem; cursor: pointer; }
-
-/* АФФИРМАЦИИ */
-.affirmation-content { height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; padding: 0 10px; }
-.affirmation-text { font-size: 1.1rem; font-style: italic; color: #555; line-height: 1.5; font-weight: 600; }
-.next-btn { background: var(--lavender-light); color: var(--primary); border: none; padding: 10px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-
-.action-btn { background: var(--lavender-light); color: var(--primary); border: none; padding: 12px 30px; border-radius: 15px; font-weight: 700; cursor: pointer; }
-.action-btn:hover, .next-btn:hover { background: var(--primary); color: white; }
-
-/* Анимация текста */
-.fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.breathing-space { height: 150px; display: flex; align-items: center; justify-content: center; position: relative; }
+.breathe-circle { width: 40px; height: 40px; background: var(--lavender-light); border-radius: 50%; transition: 4s ease-in-out; }
+.breathe-circle.inhale { transform: scale(3); background: var(--secondary); }
+.breathe-text { position: absolute; font-size: 0.9rem; color: #555; }
+.timer-display { font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+.btn-lavender { background: var(--primary); color: white; border: none; transition: 0.3s; }
+.btn-lavender:hover { background: #9a84be; }
+.very-small { font-size: 0.75rem; }
 </style>

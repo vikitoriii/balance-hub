@@ -1,158 +1,80 @@
 <template>
   <div class="blog-container container-fluid">
     
-    <!-- СЕКЦИЯ СТАТЕЙ (Bootstrap Grid & Cards) -->
-    <div class="row g-4 mb-5">
-      <div class="col-12 text-start">
-        <h3 class="fw-bold mb-4">Полезные материалы</h3>
-      </div>
+    <!-- СПИСОК СТАТЕЙ -->
+    <div v-if="!selectedPost" class="blog-list-view animate-in">
+      <div class="row g-4 mb-5 text-start px-2">
+        <div class="col-12">
+          <h3 class="fw-bold mb-1">Библиотека BalanceHub</h3>
+          <p class="text-muted small mb-4">9 экспертных лонгридов для вашего развития</p>
+        </div>
 
-      <div v-for="(post, i) in posts" :key="i" class="col-md-6 col-xl-4">
-        <article class="card h-100 border-0 shadow-sm rounded-5 overflow-hidden blog-card">
-          <div class="card-body p-4 text-start d-flex flex-column">
-            <div class="mb-3">
-              <span class="badge rounded-pill bg-lavender text-primary px-3 py-2">
-                {{ post.tag }}
-              </span>
+        <div v-for="post in blogPosts" :key="post.id" class="col-md-6 col-lg-4">
+          <article class="card h-100 border-0 shadow-sm rounded-5 blog-card">
+            <div class="card-body p-4 d-flex flex-column">
+              <div class="mb-3">
+                <span class="custom-badge">{{ post.tag }}</span>
+              </div>
+              <h4 class="card-title fw-bold h6 mb-3">{{ post.title }}</h4>
+              <p class="card-text text-muted small flex-grow-1">{{ post.excerpt }}</p>
+              <button class="btn-read-more" @click="openArticle(post)">
+                Читать полностью →
+              </button>
             </div>
-            <h4 class="card-title fw-bold h5 mb-3">{{ post.title }}</h4>
-            <p class="card-text text-muted small flex-grow-1">{{ post.excerpt }}</p>
-            <button class="btn btn-link p-0 text-primary fw-bold text-decoration-none mt-3" @click="openArticle(post)">
-              Читать полностью →
-            </button>
-          </div>
-        </article>
+          </article>
+        </div>
       </div>
+      
+      <!-- ПОДКЛЮЧАЕМ НОВЫЙ ИНТЕРАКТИВНЫЙ ИНСТРУМЕНТ (ВМЕСТО АККОРДЕОНА) -->
+      <StickerJar />
     </div>
 
-    <!-- ИНТЕРАКТИВНЫЙ FAQ (JQuery UI Accordion) -->
-    <div class="row mt-5">
-      <div class="col-lg-8 mx-auto text-start">
-        <h3 class="fw-bold mb-4 text-center">Часто задаваемые вопросы</h3>
-        
-        <div id="blog-accordion" class="custom-accordion">
-          <h3>Как понять, что мне пора отдохнуть?</h3>
-          <div>
-            <p>Первые признаки — это раздражительность, нарушение сна и нежелание заниматься тем, что раньше приносило радость. Если вы заметили это, используйте раздел «Антистресс» или «Медитации» прямо сейчас.</p>
-          </div>
-          
-          <h3>Помогает ли Колесо баланса на самом деле?</h3>
-          <div>
-            <p>Да, это инструмент визуализации. Когда мы видим «перекос» на графике, наш мозг лучше осознает проблему, чем когда мы просто об этом думаем. Это первый шаг к изменениям.</p>
-          </div>
+    <!-- РЕЖИМ ЧТЕНИЯ СТАТЬИ -->
+    <div v-else class="article-full-view text-start animate-in">
+      <button @click="selectedPost = null" class="btn-back mb-4">← К списку материалов</button>
+      
+      <div class="article-header mb-4">
+        <span class="custom-badge mb-3 d-inline-block">{{ selectedPost.tag }}</span>
+        <h2 class="fw-bold h3">{{ selectedPost.title }}</h2>
+      </div>
 
-          <h3>Сколько времени нужно на формирование привычки?</h3>
-          <div>
-            <p>Научные данные говорят о сроке от 18 до 254 дней. В среднем — 66 дней. Главное не скорость, а регулярность, которую помогает отслеживать наш трекер.</p>
-          </div>
-
-          <h3>Безопасно ли проходить тест DASS-21?</h3>
-          <div>
-            <p>Это научно признанная методика. Однако помните, что результаты в приложении носят ознакомительный характер. Если баллы очень высокие, лучше обратиться к профессиональному психологу.</p>
-          </div>
+      <div class="article-content card border-0 shadow-sm p-4 p-md-5 rounded-5">
+        <div v-html="selectedPost.fullContent" class="long-text-body"></div>
+        <div class="article-footer mt-5 p-4 rounded-4" style="background: var(--bg-site)">
+          <p class="small m-0 text-muted italic">Материал подготовлен специально для проекта BalanceHub.</p>
         </div>
       </div>
     </div>
-
-    <!-- ДЕКОРАТИВНАЯ ЦИТАТА -->
-    <div class="row mt-5">
-      <div class="col-12">
-        <div class="quote-box p-5 rounded-5 text-center italic">
-          <p class="fs-4">«Забота о себе — это не эгоизм. Это фундамент, на котором строится ваша жизнь и успех». 🌿</p>
-        </div>
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { blogPosts } from '../data/blogContent.js'
 
-const posts = ref([
-  {
-    title: '5 техник борьбы с экзаменационным стрессом',
-    tag: 'Учеба',
-    excerpt: 'Как сохранять спокойствие, когда до зачета осталась одна ночь, и почему "зубрежка" без перерывов не работает.'
-  },
-  {
-    title: 'Гигиена цифрового пространства',
-    tag: 'Ментальное здоровье',
-    excerpt: 'Как социальные сети влияют на уровень дофамина и почему важно делать "цифровой детокс" хотя бы раз в неделю.'
-  },
-  {
-    title: 'Искусство маленьких шагов',
-    tag: 'Саморазвитие',
-    excerpt: 'Почему глобальные цели пугают наш мозг и как обмануть лень, используя систему микро-привычек.'
-  }
-])
 
-onMounted(() => {
-  // Инициализация JQuery UI Accordion
-  // window.$ — это обращение к глобальному JQuery
-  if (window.$ && window.$.fn.accordion) {
-    window.$("#blog-accordion").accordion({
-      heightStyle: "content",
-      collapsible: true,
-      active: false // изначально всё закрыто
-    });
-  }
-})
+const selectedPost = ref(null)
 
 const openArticle = (post) => {
-  alert(`Вы открыли статью: "${post.title}". В полной версии здесь будет переход на лонгрид!`);
+  selectedPost.value = post;
+  window.scrollTo(0, 0);
 }
 </script>
 
 <style scoped>
-.blog-card {
-  transition: all 0.3s ease;
-  border: 1px solid #f0f0f0 !important;
-}
+.animate-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.blog-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(179, 156, 208, 0.15) !important;
-}
+.custom-badge { background-color: var(--lavender-light) !important; color: var(--primary) !important; padding: 5px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+.btn-read-more { background: none; border: none; color: var(--primary); font-weight: 800; font-size: 0.8rem; padding: 0; margin-top: 15px; text-align: left; transition: 0.3s; }
+.btn-read-more:hover { opacity: 0.7; transform: translateX(5px); }
+.blog-card { border: 1px solid #f9f0ff !important; transition: 0.3s; height: 100%; }
+.blog-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(179, 156, 208, 0.1) !important; }
 
-.bg-lavender {
-  background-color: var(--lavender-light);
-}
-
-.text-primary {
-  color: var(--primary) !important;
-}
-
-/* Стилизация JQuery UI Accordion под наш дизайн */
-.custom-accordion :deep(.ui-accordion-header) {
-  background: white !important;
-  border: 1px solid #eee !important;
-  border-radius: 15px !important;
-  margin-bottom: 10px !important;
-  padding: 15px 20px !important;
-  font-family: 'Nunito', sans-serif !important;
-  font-weight: 700 !important;
-  color: #444 !important;
-  outline: none !important;
-}
-
-.custom-accordion :deep(.ui-accordion-header-active) {
-  border-color: var(--primary) !important;
-  color: var(--primary) !important;
-}
-
-.custom-accordion :deep(.ui-accordion-content) {
-  border: none !important;
-  background: transparent !important;
-  padding: 10px 20px 20px !important;
-  font-size: 0.95rem;
-  color: #666;
-}
-
-.quote-box {
-  background-color: rgba(179, 156, 208, 0.05);
-  border: 2px dashed var(--lavender-light);
-  color: #888;
-  font-style: italic;
-}
+.btn-back { background: var(--white); border: 1px solid #eee; padding: 8px 16px; border-radius: 10px; color: var(--primary); font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+.long-text-body { line-height: 1.8; color: #444; }
+.long-text-body :deep(h5) { margin-top: 30px; font-weight: 800; color: var(--primary); border-left: 3px solid var(--secondary); padding-left: 15px; }
+.long-text-body :deep(p) { margin-bottom: 20px; font-size: 1rem; }
+.long-text-body :deep(ul) { margin-bottom: 20px; }
+.long-text-body :deep(li) { margin-bottom: 10px; }
 </style>
