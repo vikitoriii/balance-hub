@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- Анимации фона сохранены -->
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
     <div class="bg-blob blob-3"></div>
@@ -9,38 +8,37 @@
       <nav>
         <div class="logo">BalanceHub</div>
         <ul>
-          <li><a href="#" @click.prevent="currentTab = 'Meditation'" :class="{ active: currentTab === 'Meditation' }">Медитации</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Test'" :class="{ active: currentTab === 'Test' }">Тест</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Wheel'" :class="{ active: currentTab === 'Wheel' }">Колесо</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Habits'" :class="{ active: currentTab === 'Habits' }">Привычки</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Relax'" :class="{ active: currentTab === 'Relax' }">Антистресс</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Mood'" :class="{ active: currentTab === 'Mood' }">Дневник</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Goals'" :class="{ active: currentTab === 'Goals' }">Цели</a></li>
-          <li><a href="#" @click.prevent="currentTab = 'Blog'" :class="{ active: currentTab === 'Blog' }">Блог</a></li>
+          <li v-for="tab in menuItems" :key="tab.id">
+            <a v-if="currentTab !== tab.id" href="#" @click.prevent="currentTab = tab.id">
+              {{ tab.name }}
+            </a>
+            <span v-else class="active-tab-indicator">{{ tab.name }}</span>
+          </li>
         </ul>
       </nav>
     </header>
 
     <main>
-      <!-- Уменьшенные заголовки для компактности -->
-      <h1 v-if="currentTab === 'Meditation'">Медитации и покой</h1>
-      <h1 v-else-if="currentTab === 'Test'">Диагностика состояния</h1>
-      <h1 v-else-if="currentTab === 'Wheel'">Колесо баланса</h1>
-      <h1 v-else-if="currentTab === 'Habits'">Трекер привычек</h1>
-      <h1 v-else-if="currentTab === 'Relax'">Антистресс-рум</h1>
-      <h1 v-else-if="currentTab === 'Mood'">Дневник настроения</h1>
-      <h1 v-else-if="currentTab === 'Goals'">Мои цели</h1>
-      <h1 v-else-if="currentTab === 'Blog'">Блог и советы</h1>
+      <h1>
+        <template v-if="currentTab === 'Wheel'">колесо жизненного баланса</template>
+        <template v-else-if="currentTab === 'Test'">диагностика состояния</template>
+        <template v-else-if="currentTab === 'Habits'">трекер полезных привычек</template>
+        <template v-else-if="currentTab === 'Meditation'">медитации и покой</template>
+        <template v-else-if="currentTab === 'Relax'">антистресс-рум</template>
+        <template v-else-if="currentTab === 'Mood'">дневник настроения</template>
+        <template v-else-if="currentTab === 'Goals'">мои цели</template>
+        <template v-else-if="currentTab === 'Blog'">блог и советы</template>
+      </h1>
 
       <section class="content-container">
-        <MeditationRoom v-if="currentTab === 'Meditation'" />
-        <MentalTest v-else-if="currentTab === 'Test'" />
-        <BalanceWheel v-else-if="currentTab === 'Wheel'" />
-        <HabitTracker v-else-if="currentTab === 'Habits'" />
-        <RelaxRoom v-else-if="currentTab === 'Relax'" />
-        <MoodDiary v-else-if="currentTab === 'Mood'" />
-        <SmartGoals v-else-if="currentTab === 'Goals'" />
-        <BlogComponent v-else-if="currentTab === 'Blog'" />
+        <BalanceWheel v-if="currentTab === 'Wheel'"></BalanceWheel>
+        <MentalTest v-else-if="currentTab === 'Test'"></MentalTest>
+        <HabitTracker v-else-if="currentTab === 'Habits'"></HabitTracker>
+        <MeditationRoom v-else-if="currentTab === 'Meditation'"></MeditationRoom>
+        <RelaxRoom v-else-if="currentTab === 'Relax'"></RelaxRoom>
+        <MoodDiary v-else-if="currentTab === 'Mood'"></MoodDiary>
+        <SmartGoals v-else-if="currentTab === 'Goals'"></SmartGoals>
+        <BlogComponent v-else-if="currentTab === 'Blog'"></BlogComponent>
       </section>
     </main>
 
@@ -53,7 +51,7 @@
 <script setup>
 import { ref } from 'vue'
 
-// Импорт компонентов
+// [Требование №6] Использование фреймворка Vue.js 3
 import MeditationRoom from './components/MeditationRoom.vue'
 import MentalTest from './components/MentalTest.vue'
 import BalanceWheel from './components/BalanceWheel.vue'
@@ -63,13 +61,22 @@ import MoodDiary from './components/MoodDiary.vue'
 import SmartGoals from './components/SmartGoals.vue'
 import BlogComponent from './components/Blog.vue'
 
-const currentTab = ref('Meditation')
+const menuItems = [
+  { id: 'Wheel', name: 'Колесо' },
+  { id: 'Test', name: 'Тест' },
+  { id: 'Habits', name: 'Привычки' },
+  { id: 'Meditation', name: 'Медитации' },
+  { id: 'Relax', name: 'Антистресс' },
+  { id: 'Mood', name: 'Дневник' },
+  { id: 'Goals', name: 'Цели' },
+  { id: 'Blog', name: 'Блог' }
+]
+
+const currentTab = ref('Wheel')
 </script>
 
 <style scoped>
-/* В App.vue оставляем ТОЛЬКО анимации фона. 
-   Всё остальное теперь в assets/style.css */
-
+/* Только анимации «блобов» для App.vue */
 .bg-blob {
   position: fixed;
   border-radius: 50%;
@@ -83,17 +90,7 @@ const currentTab = ref('Meditation')
 .blob-3 { width: 250px; height: 250px; background: #ffeebb; top: 40%; left: 60%; }
 
 @keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(60px, 30px) scale(1.05); }
-}
-
-.content-container {
-  width: 100%;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 30px); }
 }
 </style>

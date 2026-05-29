@@ -1,88 +1,139 @@
-/* ПОДКЛЮЧЕНИЕ ШРИФТОВ */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Nunito:wght@400;600;700&display=swap');
+/* [Требование №10] Глобальные стили и переменные */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;700&family=Nunito:wght@400;600;700&display=swap');
 
 :root {
   --bg-site: #fefaf9;    
   --primary: #b39cd0;   
   --secondary: #ffcfdf; 
   --lavender-light: #f0e6ff;
-  --text-dark: #2d2d2d;
+  --text-dark: #444444;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при клике на Айфоне */
+}
 
 body {
   background-color: var(--bg-site);
   font-family: 'Nunito', sans-serif;
   color: var(--text-dark);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden; /* Запрещаем боковую прокрутку всего сайта */
 }
 
-/* ЭЛЕГАНТНЫЙ ЗАГОЛОВОК */
-h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 1.5rem; /* Еще немного уменьшили */
-  letter-spacing: 4px;
-  text-transform: lowercase;
-  color: var(--primary); 
-  margin: 15px 0 20px;
-  text-align: center;
-}
-
-h1::after {
-  content: ''; display: block; width: 25px; height: 2px;
-  background: var(--secondary); margin: 6px auto 0; border-radius: 10px;
-}
-
-/* КОМПАКТНОЕ МЕНЮ */
+/* --- ШАПКА --- */
 header {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 12px 0; /* Добавили чуть больше отступа сверху/снизу для центровки */
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-  position: sticky; top: 0; z-index: 1000;
+  -webkit-backdrop-filter: blur(10px); /* Для Сафари */
+  box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+  position: sticky; 
+  top: 0; 
+  z-index: 1000;
+  width: 100%;
 }
 
 nav {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  max-width: 1300px !important; /* Увеличили макс. ширину */
-  margin: 0 auto !important;
-  padding: 0 40px !important; /* ВЕРНУЛИ ОТСТУПЫ ПО БОКАМ */
+  display: flex;
+  flex-direction: column; /* На телефонах: Логотип над Меню */
+  align-items: center;
+  padding: 10px 15px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .logo {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.1rem; /* Уменьшили лого */
-  font-weight: 700; color: var(--primary);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
 }
 
-nav ul { display: flex; list-style: none; gap: 4px; align-items: center; }
-
-nav a {
-  text-decoration: none; color: var(--text-dark); font-weight: 700;
-  padding: 5px 12px; /* Уменьшили кнопки */
-  border-radius: 8px; transition: 0.3s; 
-  font-size: 0.75rem; /* Сделали надписи в меню меньше */
-  text-transform: uppercase; letter-spacing: 0.5px;
+/* --- МЕНЮ (Скролл пальцем влево-вправо) --- */
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 5px;
+  width: 100vw; /* На всю ширину окна */
+  overflow-x: auto; /* Позволяем листать меню */
+  padding: 0 20px 10px;
+  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+  scrollbar-width: none; /* Прячем полосу прокрутки */
 }
-nav a:hover, nav a.active { background: var(--lavender-light); color: var(--primary); }
 
-/* ОБЩИЕ СТИЛИ КАРТОЧЕК */
+nav ul::-webkit-scrollbar { display: none; } /* Прячем скролл в Сафари */
+
+nav a, .active-tab-indicator {
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 12px;
+  white-space: nowrap; /* Важно: текст не переносится */
+  color: var(--text-dark);
+  display: block;
+}
+
+.active-tab-indicator {
+  background: var(--lavender-light);
+  color: var(--primary);
+}
+
+/* --- ЗАГОЛОВКИ --- */
+h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 1.4rem; /* Меньше для мобилок */
+  letter-spacing: 2px;
+  text-transform: lowercase;
+  color: var(--primary); 
+  margin: 20px 15px;
+  text-align: center;
+}
+
+/* --- КОНТЕНТ (Главная магия здесь) --- */
+main { 
+  width: 100%;
+  padding: 0 15px; /* Боковые отступы, чтобы карточки не липли */
+}
+
+/* Все сетки из 2 колонок превращаем в 1 колонку */
+.meditation-layout, .wheel-container, .mood-grid, .row {
+  display: flex !important;
+  flex-direction: column !important; /* Всё в столбик */
+  gap: 20px !important;
+}
+
+/* Карточки подгоняем под ширину */
 .card, .diary-card, .meditation-card, .test-card, .controls-card, .wheel-card {
-  padding: 18px !important; /* Еще компактнее */
-  border-radius: 20px !important;
-  background: white;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.02);
-  border: 1px solid #f9f0ff !important;
-}
-main {
   width: 100% !important;
-  max-width: 1300px !important;
-  margin: 20px auto !important;
-  padding: 0 40px !important; /* ВЕРНУЛИ ОТСТУПЫ ПО БОКАМ */
-  display: block !important;
+  padding: 20px !important;
+  border-radius: 25px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
-footer { text-align: center; padding: 25px; color: #ccc; font-size: 0.7rem; }
+/* Для Колеса и Медитаций - убираем фиксированную ширину сайдбаров */
+.meditation-sidebar, .controls, .visual-area {
+  flex: none !important;
+  width: 100% !important;
+}
+
+/* Крупный текст в результатах уменьшаем */
+.score-val { font-size: 3rem !important; }
+
+footer { padding: 30px; color: #ccc; font-size: 0.75rem; }
+
+/* Адаптация для ОЧЕНЬ маленьких экранов */
+@media (min-width: 768px) {
+  nav { flex-direction: row; padding: 15px 30px; }
+  .logo { margin-bottom: 0; }
+  nav ul { width: auto; overflow-x: visible; padding: 0; }
+  h1 { font-size: 1.7rem; letter-spacing: 5px; }
+  .meditation-layout, .mood-grid { flex-direction: row !important; }
+}
