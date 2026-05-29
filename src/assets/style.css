@@ -1,4 +1,3 @@
-/* [Требование №10] Глобальные стили и переменные */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;700&family=Nunito:wght@400;600;700&display=swap');
 
 :root {
@@ -10,9 +9,7 @@
 }
 
 * { 
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box; 
+  margin: 0; padding: 0; box-sizing: border-box; 
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -28,160 +25,70 @@ body {
 /* --- ШАПКА --- */
 header {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 15px rgba(0,0,0,0.03);
-  position: sticky; 
-  top: 0; 
-  z-index: 1000;
-  width: 100%;
+  position: sticky; top: 0; z-index: 1000;
 }
 
-/* --- ЗАГОЛОВКИ (Тот самый шрифт с полосочкой) --- */
+/* --- ЗАГОЛОВКИ --- */
 h1 {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 1.7rem;
-  letter-spacing: 5px;
-  text-transform: lowercase;
-  color: var(--primary); 
-  margin: 30px auto;
-  text-align: center;
-  position: relative;
+  font-weight: 300; font-size: 1.7rem; letter-spacing: 5px;
+  text-transform: lowercase; color: var(--primary); 
+  margin: 30px auto; text-align: center; position: relative;
 }
-
 h1::after {
   content: ''; display: block; width: 30px; height: 2px;
   background: var(--secondary); margin: 8px auto 0; border-radius: 10px;
 }
 
-/* --- ГЛАВНЫЙ КОНТЕЙНЕР --- */
-main { 
-  max-width: 1200px; 
-  margin: 0 auto; 
-  padding: 0 40px; /* Отступы для ноута */
-}
-
-/* --- ОБЩИЙ ВИД КАРТОЧЕК --- */
+/* --- ГРИДЫ И КАРТОЧКИ --- */
 .card, .diary-card, .meditation-card, .test-card, .controls-card, .wheel-card {
-  padding: 25px;
-  border-radius: 30px;
-  background: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-  border: 1px solid rgba(179, 156, 208, 0.1);
+  padding: 25px; border-radius: 30px; background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(179, 156, 208, 0.1);
 }
 
-/* =================================================== */
-/* ДЕСКТОП: Настройки для Ноутбука (от 992px и выше)    */
-/* =================================================== */
-@media (min-width: 992px) {
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 30px;
-  }
-
-  nav ul {
-    display: flex;
-    list-style: none;
-    gap: 8px;
-  }
-
-  /* Возвращаем двухколоночный вид для всех разделов */
-  .meditation-layout, .mood-grid, .wheel-container {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start;
-    gap: 40px !important;
-  }
-
-  .meditation-main, .mood-main { flex: 1; }
-  .meditation-sidebar, .mood-sidebar, .controls { flex: 0 0 350px; }
-}
-
-/* =================================================== */
-/* МОБИЛКА: Настройки для Телефона (до 991px)          */
-/* =================================================== */
-@media (max-width: 991px) {
-  nav {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 0;
-  }
-
-  .logo { margin-bottom: 10px; font-size: 1.2rem; }
-
-  /* Свайп-меню для пальца */
-  nav ul {
-    display: flex;
-    list-style: none;
-    gap: 5px;
-    width: 100vw;
-    overflow-x: auto;
-    padding: 0 20px 10px;
-    -webkit-overflow-scrolling: touch;
-  }
-  nav ul::-webkit-scrollbar { display: none; }
-
-  h1 { font-size: 1.4rem; letter-spacing: 2px; margin: 20px 15px; }
-
-  main { padding: 0 20px; }
-
-  /* В один столбик на телефоне */
-  .meditation-layout, .mood-grid, .wheel-container, .row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-  }
-
-  .meditation-sidebar, .visual-area, .controls { width: 100% !important; }
-}
-
-/* Стили ссылок (общие) */
-nav a, .active-tab-indicator {
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 12px;
-  transition: 0.3s;
-  color: var(--text-dark);
-  white-space: nowrap;
-}
-
-nav a:hover, .active-tab-indicator {
-  background: var(--lavender-light);
-  color: var(--primary);
-}
-
-footer { text-align: center; padding: 40px; color: #ccc; font-size: 0.8rem; }
-.goal-card, .ui-slider-handle {
-  touch-action: none !important; /* КРИТИЧНО для новых версий iOS */
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-/* КРИТИЧЕСКИЙ ФИКС ДЛЯ IPHONE */
-.goal-card, .habit-item-card, .ui-slider-handle, .t-btn, .nav-link {
-  /* Запрещаем выделение текста */
+/* --- СПЕЦИАЛЬНЫЙ ФИКС ДЛЯ ПЕРЕТАСКИВАНИЯ НА IPHONE --- */
+.drag-handle {
+  cursor: grab;
+  color: #ddd;
+  font-size: 1.4rem;
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Эти 3 строки запрещают iPhone "цеплять" элемент для скролла или выделения */
+  touch-action: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
-  
-  /* Запрещаем появление системного меню (копировать/поделиться) при долгом нажатии */
-  -webkit-touch-callout: none !important;
-  
-  /* Отключаем стандартные жесты браузера на этих элементах */
-  touch-action: none !important;
-  
-  /* Убираем синий блик при нажатии */
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* Дополнительно для всего контейнера списка */
-#sortable-goals, #sortable-list {
-  touch-action: pan-y; /* Разрешаем только вертикальный скролл страницы */
+.drag-handle:active { color: var(--primary); cursor: grabbing; }
+
+/* Чтобы слайдер в Медитациях тоже работал */
+.ui-slider-handle {
+  touch-action: none !important;
+  -webkit-user-select: none !important;
 }
+
+/* --- АДАПТИВНОСТЬ --- */
+@media (min-width: 992px) {
+  nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 15px 30px; }
+  nav ul { display: flex; list-style: none; gap: 8px; }
+  .meditation-layout, .mood-grid, .wheel-container { display: flex !important; flex-direction: row !important; gap: 40px !important; }
+}
+
+@media (max-width: 991px) {
+  nav { display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
+  nav ul { display: flex; list-style: none; gap: 5px; width: 100vw; overflow-x: auto; padding: 0 20px 10px; -webkit-overflow-scrolling: touch; }
+  nav ul::-webkit-scrollbar { display: none; }
+  h1 { font-size: 1.3rem; margin: 20px 10px; }
+  .meditation-layout, .mood-grid, .wheel-container, .row { display: flex !important; flex-direction: column !important; gap: 20px !important; }
+}
+
+nav a, .active-tab-indicator {
+  text-decoration: none; font-size: 0.8rem; font-weight: 700; padding: 8px 16px; border-radius: 12px; transition: 0.3s; color: var(--text-dark); white-space: nowrap;
+}
+nav a:hover, .active-tab-indicator { background: var(--lavender-light); color: var(--primary); }
+footer { text-align: center; padding: 40px; color: #ccc; }

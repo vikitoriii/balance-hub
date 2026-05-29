@@ -1,40 +1,30 @@
-<!-- [Требование №10] Использование DOCTYPE -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <!-- [Требование №7] Базовая оптимизация SEO: иконка и описание -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="description" content="BalanceHub — интерактивная платформа для ментального здоровья: колесо баланса, трекер привычек и медитации." />
-    <meta name="keywords" content="ментальное здоровье, саморазвитие, трекер привычек, психология" />
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BalanceHub — Твой навигатор спокойствия</title>
     
-    <!-- [Требование №3] Адаптивный дизайн: вьюпорт -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- [Требование №9] Подключение Bootstrap 5 CSS -->
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- [Требование №9] Подключение JQuery UI CSS -->
+    <!-- JQuery UI CSS -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<!-- Используем эту версию -->
-<script src="https://raw.githack.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js"></script>
-    <!-- [Требование №10] Наличие <title> -->
-    <title>BalanceHub — Твой навигатор ментального благополучия</title>
   </head>
   <body>
-    <!-- [Требование №1] Клиентская часть: точка входа приложения -->
     <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-    <!-- [Требование №6] Использование фреймворка Vue.js (через сборщик Vite) -->
-    <script type="module" src="/src/main.js"></script>
 
-    <!-- [Требование №9] Подключение JQuery и JQuery UI -->
+    <!-- ВАЖНО: СТРОГИЙ ПОРЯДОК СКРИПТОВ -->
+    <!-- 1. JQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 2. JQuery UI -->
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    
-    <!-- [Требование №9] Подключение Bootstrap JS Bundle -->
+    <!-- 3. Touch Punch (Исправление для смартфонов) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <!-- 4. Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 5. Твоё приложение -->
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
