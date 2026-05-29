@@ -10,10 +10,10 @@
 }
 
 * { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-    -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при клике на Айфоне */
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -22,14 +22,14 @@ body {
   color: var(--text-dark);
   min-height: 100vh;
   width: 100%;
-  overflow-x: hidden; /* Запрещаем боковую прокрутку всего сайта */
+  overflow-x: hidden;
 }
 
 /* --- ШАПКА --- */
 header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* Для Сафари */
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 15px rgba(0,0,0,0.03);
   position: sticky; 
   top: 0; 
@@ -37,103 +37,125 @@ header {
   width: 100%;
 }
 
-nav {
-  display: flex;
-  flex-direction: column; /* На телефонах: Логотип над Меню */
-  align-items: center;
-  padding: 10px 15px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.logo {
+/* --- ЗАГОЛОВКИ (Тот самый шрифт с полосочкой) --- */
+h1 {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 10px;
+  font-weight: 300;
+  font-size: 1.7rem;
+  letter-spacing: 5px;
+  text-transform: lowercase;
+  color: var(--primary); 
+  margin: 30px auto;
+  text-align: center;
+  position: relative;
 }
 
-/* --- МЕНЮ (Скролл пальцем влево-вправо) --- */
-nav ul {
-  display: flex;
-  list-style: none;
-  gap: 5px;
-  width: 100vw; /* На всю ширину окна */
-  overflow-x: auto; /* Позволяем листать меню */
-  padding: 0 20px 10px;
-  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
-  scrollbar-width: none; /* Прячем полосу прокрутки */
+h1::after {
+  content: ''; display: block; width: 30px; height: 2px;
+  background: var(--secondary); margin: 8px auto 0; border-radius: 10px;
 }
 
-nav ul::-webkit-scrollbar { display: none; } /* Прячем скролл в Сафари */
+/* --- ГЛАВНЫЙ КОНТЕЙНЕР --- */
+main { 
+  max-width: 1200px; 
+  margin: 0 auto; 
+  padding: 0 40px; /* Отступы для ноута */
+}
 
+/* --- ОБЩИЙ ВИД КАРТОЧЕК --- */
+.card, .diary-card, .meditation-card, .test-card, .controls-card, .wheel-card {
+  padding: 25px;
+  border-radius: 30px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+  border: 1px solid rgba(179, 156, 208, 0.1);
+}
+
+/* =================================================== */
+/* ДЕСКТОП: Настройки для Ноутбука (от 992px и выше)    */
+/* =================================================== */
+@media (min-width: 992px) {
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 30px;
+  }
+
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+  }
+
+  /* Возвращаем двухколоночный вид для всех разделов */
+  .meditation-layout, .mood-grid, .wheel-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start;
+    gap: 40px !important;
+  }
+
+  .meditation-main, .mood-main { flex: 1; }
+  .meditation-sidebar, .mood-sidebar, .controls { flex: 0 0 350px; }
+}
+
+/* =================================================== */
+/* МОБИЛКА: Настройки для Телефона (до 991px)          */
+/* =================================================== */
+@media (max-width: 991px) {
+  nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .logo { margin-bottom: 10px; font-size: 1.2rem; }
+
+  /* Свайп-меню для пальца */
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+    width: 100vw;
+    overflow-x: auto;
+    padding: 0 20px 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav ul::-webkit-scrollbar { display: none; }
+
+  h1 { font-size: 1.4rem; letter-spacing: 2px; margin: 20px 15px; }
+
+  main { padding: 0 20px; }
+
+  /* В один столбик на телефоне */
+  .meditation-layout, .mood-grid, .wheel-container, .row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .meditation-sidebar, .visual-area, .controls { width: 100% !important; }
+}
+
+/* Стили ссылок (общие) */
 nav a, .active-tab-indicator {
   text-decoration: none;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 12px;
-  white-space: nowrap; /* Важно: текст не переносится */
+  transition: 0.3s;
   color: var(--text-dark);
-  display: block;
+  white-space: nowrap;
 }
 
-.active-tab-indicator {
+nav a:hover, .active-tab-indicator {
   background: var(--lavender-light);
   color: var(--primary);
 }
 
-/* --- ЗАГОЛОВКИ --- */
-h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 1.4rem; /* Меньше для мобилок */
-  letter-spacing: 2px;
-  text-transform: lowercase;
-  color: var(--primary); 
-  margin: 20px 15px;
-  text-align: center;
-}
-
-/* --- КОНТЕНТ (Главная магия здесь) --- */
-main { 
-  width: 100%;
-  padding: 0 15px; /* Боковые отступы, чтобы карточки не липли */
-}
-
-/* Все сетки из 2 колонок превращаем в 1 колонку */
-.meditation-layout, .wheel-container, .mood-grid, .row {
-  display: flex !important;
-  flex-direction: column !important; /* Всё в столбик */
-  gap: 20px !important;
-}
-
-/* Карточки подгоняем под ширину */
-.card, .diary-card, .meditation-card, .test-card, .controls-card, .wheel-card {
-  width: 100% !important;
-  padding: 20px !important;
-  border-radius: 25px !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* Для Колеса и Медитаций - убираем фиксированную ширину сайдбаров */
-.meditation-sidebar, .controls, .visual-area {
-  flex: none !important;
-  width: 100% !important;
-}
-
-/* Крупный текст в результатах уменьшаем */
-.score-val { font-size: 3rem !important; }
-
-footer { padding: 30px; color: #ccc; font-size: 0.75rem; }
-
-/* Адаптация для ОЧЕНЬ маленьких экранов */
-@media (min-width: 768px) {
-  nav { flex-direction: row; padding: 15px 30px; }
-  .logo { margin-bottom: 0; }
-  nav ul { width: auto; overflow-x: visible; padding: 0; }
-  h1 { font-size: 1.7rem; letter-spacing: 5px; }
-  .meditation-layout, .mood-grid { flex-direction: row !important; }
-}
+footer { text-align: center; padding: 40px; color: #ccc; font-size: 0.8rem; }
