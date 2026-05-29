@@ -159,6 +159,15 @@ const progressPercentage = computed(() => {
 })
 
 onMounted(() => {
+window.$("#sortable-goals").sortable({
+  placeholder: "sortable-placeholder col-md-6",
+  opacity: 0.8,
+  cursor: "move",
+  revert: 200,
+  handle: ".goal-card", // Перетаскивать можно за всю карточку
+  delay: 150,           // Задержка 150мс, чтобы отличить клик от начала таскания (ВАЖНО для мобилок)
+  distance: 5           // Нужно протащить 5 пикселей, чтобы началось движение
+});
   // 1. Инициализация JQuery UI Datepicker (Требование №9)
   if (window.$ && window.$.fn.datepicker) {
     window.$("#goal-date").datepicker({
