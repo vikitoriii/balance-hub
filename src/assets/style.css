@@ -165,7 +165,23 @@ footer { text-align: center; padding: 40px; color: #ccc; font-size: 0.8rem; }
   -webkit-user-drag: none;
 }
 
-/* Фикс для слайдера в Медитациях */
-.ui-slider {
+/* КРИТИЧЕСКИЙ ФИКС ДЛЯ IPHONE */
+.goal-card, .habit-item-card, .ui-slider-handle, .t-btn, .nav-link {
+  /* Запрещаем выделение текста */
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  
+  /* Запрещаем появление системного меню (копировать/поделиться) при долгом нажатии */
+  -webkit-touch-callout: none !important;
+  
+  /* Отключаем стандартные жесты браузера на этих элементах */
   touch-action: none !important;
+  
+  /* Убираем синий блик при нажатии */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Дополнительно для всего контейнера списка */
+#sortable-goals, #sortable-list {
+  touch-action: pan-y; /* Разрешаем только вертикальный скролл страницы */
 }

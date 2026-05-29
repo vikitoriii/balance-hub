@@ -162,12 +162,16 @@ onMounted(() => {
 window.$("#sortable-goals").sortable({
   placeholder: "sortable-placeholder col-md-6",
   opacity: 0.8,
-  cursor: "move",
   revert: 200,
-  // Добавляем эти три строки:
-  delay: 150,    /* Ждем 150 мс перед началом таскания */
-  distance: 10,  /* Нужно протащить 10px, чтобы сработало */
-  tolerance: "pointer"
+  // Настройки для мобилок:
+  delay: 0,            // Убираем задержку
+  distance: 0,         // Начинаем тащить сразу
+  tolerance: "pointer",
+  handle: ".goal-card", // Тащить можно за всю карточку
+  start: function(event, ui) {
+    // Принудительно отключаем выделение текста в момент начала таскания
+    window.$(ui.item).addClass('noclick');
+  }
 });
   // 1. Инициализация JQuery UI Datepicker (Требование №9)
   if (window.$ && window.$.fn.datepicker) {
