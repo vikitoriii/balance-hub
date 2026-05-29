@@ -159,3 +159,13 @@ nav a:hover, .active-tab-indicator {
 }
 
 footer { text-align: center; padding: 40px; color: #ccc; font-size: 0.8rem; }
+.goal-card, .ui-slider-handle {
+  touch-action: none !important; /* КРИТИЧНО для новых версий iOS */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Фикс для слайдера в Медитациях */
+.ui-slider {
+  touch-action: none !important;
+}
